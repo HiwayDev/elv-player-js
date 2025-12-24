@@ -1,97 +1,132 @@
 import ControlStyles from "../static/stylesheets/controls-web.module.scss";
 
 // eslint-disable-next-line no-unused-vars
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import * as Icons from "../static/icons/Icons.js";
-import {ObserveVideo, ObserveVideoTime} from "./Observers.js";
+import { ObserveVideo, ObserveVideoTime } from "./Observers.js";
 import "focus-visible";
-import {ImageUrl, PlayerClick, Time} from "./Common.js";
+import { ImageUrl, PlayerClick, Time } from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
+import GreenfishLogo from "../static/images/greenfish_logo.svg";
 
-import EluvioLogo from "../static/images/Logo.png";
-import {ContentVerificationMenu, DVRToggle, SeekBar, SettingsMenu, VolumeControls} from "./Components.jsx";
+import {
+  ContentVerificationMenu,
+  DVRToggle,
+  SeekBar,
+  SettingsMenu,
+  VolumeControls,
+} from "./Components.jsx";
 
-export const IconButton = ({icon, className="", ...props}) => {
+export const IconButton = ({ icon, className = "", ...props }) => {
   return (
-    <button {...props} className={`${ControlStyles["icon-button"]} ${className}`} dangerouslySetInnerHTML={{__html: icon}} />
+    <button
+      {...props}
+      className={`${ControlStyles["icon-button"]} ${className}`}
+      dangerouslySetInnerHTML={{ __html: icon }}
+    />
   );
 };
 
-const TimeIndicator = ({player, videoState}) => {
+const TimeIndicator = ({ player, videoState }) => {
   const [currentTime, setCurrentTime] = useState(player.video.currentTime);
 
   useEffect(() => {
-    const disposeVideoTimeObserver = ObserveVideoTime({player, setCurrentTime, rate: 10});
+    const disposeVideoTimeObserver = ObserveVideoTime({
+      player,
+      setCurrentTime,
+      rate: 10,
+    });
 
     return () => disposeVideoTimeObserver && disposeVideoTimeObserver();
   }, []);
 
-  if(player.isLive && !player.controls.IsDVRAvailable()) {
-    return (
-      <div className={ControlStyles["live-indicator"]}>
-        Live
-      </div>
-    );
+  if (player.isLive && !player.controls.IsDVRAvailable()) {
+    return <div className={ControlStyles["live-indicator"]}>Live</div>;
   }
 
   return (
     <div className={ControlStyles["time"]}>
-      {
-        !player.isLive || !player.controls.IsDVRAvailable() ? null :
-          <DVRToggle player={player} />
-      }
-      {
-        player.isLive && !player.behindLiveEdge ? null :
-          `${Time(currentTime, videoState.duration)} / `
-      }
-      {
-        (player.isLive && !player.dvrEnabled) ? null :
-          Time(videoState.duration, videoState.duration)
-      }
+      {!player.isLive || !player.controls.IsDVRAvailable() ? null : (
+        <DVRToggle player={player} />
+      )}
+      {player.isLive && !player.behindLiveEdge
+        ? null
+        : `${Time(currentTime, videoState.duration)} / `}
+      {player.isLive && !player.dvrEnabled
+        ? null
+        : Time(videoState.duration, videoState.duration)}
     </div>
   );
 };
 
-const CollectionControls = ({player}) => {
+const CollectionControls = ({ player }) => {
   const collectionInfo = player.controls.GetCollectionInfo();
 
-  if(!collectionInfo || collectionInfo.mediaLength === 0 || !collectionInfo.isPlaylist) { return null; }
+  if (
+    !collectionInfo ||
+    collectionInfo.mediaLength === 0 ||
+    !collectionInfo.isPlaylist
+  ) {
+    return null;
+  }
 
   const previousMedia = collectionInfo.content[collectionInfo.mediaIndex - 1];
   const nextMedia = collectionInfo.content[collectionInfo.mediaIndex + 1];
 
   const playerReady = player.controls.IsReady();
   return (
-      <>
-        {
-          !previousMedia ? null :
-            <div
-              key={`media-previous-${collectionInfo.mediaIndex}`}
-              className={`${ControlStyles["collection-button-container"]} ${!playerReady ? ControlStyles["collection-button-container--loading"] : ""}`}
-            >
-              <IconButton aria-label={`Play Previous: ${previousMedia.title}`} disabled={!playerReady} icon={Icons.PreviousTrackIcon} onClick={() => player.controls.CollectionPlayPrevious()} />
-              <div className={ControlStyles["collection-button-text"]}>{ previousMedia.title }</div>
-            </div>
-        }
-        {
-          !nextMedia ? null :
-            <div
-              key={`media-next-${collectionInfo.mediaIndex}`}
-              className={`${ControlStyles["collection-button-container"]} ${!playerReady ? ControlStyles["collection-button-container--loading"] : ""}`}
-            >
-              <IconButton aria-label={`Play Next: ${nextMedia.title}`} disabled={!playerReady} icon={Icons.NextTrackIcon} onClick={() => player.controls.CollectionPlayNext()} />
-              <div className={ControlStyles["collection-button-text"]}>{ nextMedia.title }</div>
-            </div>
-        }
-      </>
+    <>
+      {!previousMedia ? null : (
+        <div
+          key={`media-previous-${collectionInfo.mediaIndex}`}
+          className={`${ControlStyles["collection-button-container"]} ${
+            !playerReady
+              ? ControlStyles["collection-button-container--loading"]
+              : ""
+          }`}
+        >
+          <IconButton
+            aria-label={`Play Previous: ${previousMedia.title}`}
+            disabled={!playerReady}
+            icon={Icons.PreviousTrackIcon}
+            onClick={() => player.controls.CollectionPlayPrevious()}
+          />
+          <div className={ControlStyles["collection-button-text"]}>
+            {previousMedia.title}
+          </div>
+        </div>
+      )}
+      {!nextMedia ? null : (
+        <div
+          key={`media-next-${collectionInfo.mediaIndex}`}
+          className={`${ControlStyles["collection-button-container"]} ${
+            !playerReady
+              ? ControlStyles["collection-button-container--loading"]
+              : ""
+          }`}
+        >
+          <IconButton
+            aria-label={`Play Next: ${nextMedia.title}`}
+            disabled={!playerReady}
+            icon={Icons.NextTrackIcon}
+            onClick={() => player.controls.CollectionPlayNext()}
+          />
+          <div className={ControlStyles["collection-button-text"]}>
+            {nextMedia.title}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
-const MenuButton = ({label, icon, player, MenuComponent, className=""}) => {
+const MenuButton = ({ label, icon, player, MenuComponent, className = "" }) => {
   const [show, setShow] = useState(false);
 
   return (
-    <div className={[ControlStyles["menu-control-container"], className].join(" ")}>
+    <div
+      className={[ControlStyles["menu-control-container"], className].join(" ")}
+    >
       <IconButton
         aria-label={show ? `Hide ${label} Menu` : label}
         aria-haspopup
@@ -102,91 +137,134 @@ const MenuButton = ({label, icon, player, MenuComponent, className=""}) => {
         }}
         className={show ? ControlStyles["icon-button-active"] : ""}
       />
-      {
-        !show ? null :
-          <MenuComponent
-            player={player}
-            Hide={() => {
-              setShow(false);
-              player.controls.__ToggleMenu(false);
-            }}
-          />
-      }
+      {!show ? null : (
+        <MenuComponent
+          player={player}
+          Hide={() => {
+            setShow(false);
+            player.controls.__ToggleMenu(false);
+          }}
+        />
+      )}
     </div>
   );
 };
 
-const ContentInfo = ({player}) => {
+const ContentInfo = ({ player, contentInfo }) => {
   const [imageUrl, setImageUrl] = useState(undefined);
+  const { image } = player.controls.GetContentInfo() || {};
+  const [title, setTitle] = useState(undefined);
+  const [subtitle, setSubtitle] = useState(undefined);
+  const [rating, setRating] = useState(undefined);
 
-  const { title, subtitle, description, image, headers } = (player.controls.GetContentInfo() || {});
+  async function loadRatingSvg(rating) {
+    const svgPath = await import(
+      `../static/images/rating/${rating.toLowerCase()}.svg`
+    );
+    return svgPath.default;
+  }
+
+  function fetchData() {
+    async function _fetchData() {
+      const { title, subtitle, headers } = player.playerOptions.previewMode
+        ? contentInfo || {}
+        : player.controls.GetContentInfo() || {};
+      setTitle(title);
+      setSubtitle(subtitle);
+      console.log(player.controls.GetContentInfo());
+      if (headers) {
+        const svg = await loadRatingSvg(headers[0]);
+        setRating(svg);
+      } else {
+        setRating(undefined);
+      }
+    }
+    _fetchData();
+  }
+
+  useEffect(() => {
+    const source = player.playerOptions.previewMode
+      ? contentInfo || {}
+      : player.controls.GetContentInfo() || {};
+    fetchData(source);
+  }, []);
+
+  useEffect(() => {
+    if (player.playerOptions.previewMode) {
+      const source = contentInfo || {};
+      fetchData(source);
+    }
+  }, [contentInfo]);
 
   useEffect(() => {
     setImageUrl(undefined);
 
-    if(!image) { return; }
+    if (!image) {
+      return;
+    }
 
-    ImageUrl({player, pathOrUrl: image, width: 200})
-      .then(imageUrl => setImageUrl(imageUrl));
+    ImageUrl({ player, pathOrUrl: image, width: 200 }).then((imageUrl) =>
+      setImageUrl(imageUrl)
+    );
   }, [image]);
 
-  if(
-    !title ||
-    (player.playerOptions.title === EluvioPlayerParameters.title.FULLSCREEN_ONLY && !player.controls.IsFullscreen()) ||
+  if (
+    (player.playerOptions.title ===
+      EluvioPlayerParameters.title.FULLSCREEN_ONLY &&
+      !player.controls.IsFullscreen()) ||
     player.playerOptions.title === EluvioPlayerParameters.title.OFF
   ) {
     return null;
   }
 
   return (
-    <div className={ControlStyles["info-container"]}>
-      {
-        !imageUrl ? null :
-          <div className={ControlStyles["info-image-container"]}>
-            <img src={imageUrl} alt="Image" className={ControlStyles["info-image"]} />
-          </div>
-      }
-      <div className={ControlStyles["info-text"]}>
-        {
-          headers.length === 0 ? null :
-            <div className={ControlStyles["info-headers"]}>
-              {headers.map((text, index) =>
-                <div key={`header-${index}`} className={ControlStyles["info-header"]}>
-                  { text }
-                </div>
-              )}
-            </div>
-        }
-        { !title ? null : <div className={ControlStyles["info-title"]}>{title}</div> }
-        { !subtitle ? null : <div className={ControlStyles["info-subtitle"]}>{subtitle}</div> }
-        { !description ? null : <div className={ControlStyles["info-description"]}>{description}</div> }
+    <>
+      {rating && (
+        <div className={ControlStyles["info-container-top"]}>
+          <div>Rated</div>
+          <img src={rating} alt="Rating" />
+        </div>
+      )}
+
+      <div className={ControlStyles["info-container"]}>
+        <div className={ControlStyles["info-text"]}>
+          {!subtitle ? null : (
+            <div className={ControlStyles["info-subtitle"]}>{subtitle}</div>
+          )}
+          {!title ? null : (
+            <div className={ControlStyles["info-title"]}>{title}</div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
-const ContentVerificationControls = ({player}) => {
+const ContentVerificationControls = ({ player }) => {
   const [contentVerified, setContentVerified] = useState(false);
 
   useEffect(() => {
-    const UpdateVerification = () => player && player.controls && setContentVerified(player.controls.ContentVerified());
+    const UpdateVerification = () =>
+      player &&
+      player.controls &&
+      setContentVerified(player.controls.ContentVerified());
 
     UpdateVerification();
 
-    const disposeSettingsListener = player.controls && player.controls.RegisterSettingsListener(UpdateVerification);
+    const disposeSettingsListener =
+      player.controls &&
+      player.controls.RegisterSettingsListener(UpdateVerification);
 
     return () => disposeSettingsListener && disposeSettingsListener();
   }, []);
 
-  if(!contentVerified) {
+  if (!contentVerified) {
     return null;
   }
 
   return (
     <>
-      <div className={ControlStyles["content-verified-badge"]}>
-        VERIFIED
-      </div>
+      <div className={ControlStyles["content-verified-badge"]}>VERIFIED</div>
       <MenuButton
         label="Content Verification Menu"
         icon={Icons.ContentBadgeIcon}
@@ -198,20 +276,51 @@ const ContentVerificationControls = ({player}) => {
   );
 };
 
-const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setRecentUserAction, className=""}) => {
+const WebControls = ({
+  player,
+  playbackStarted,
+  canPlay,
+  recentlyInteracted,
+  setRecentUserAction,
+  className = "",
+  contentInfo,
+}) => {
   const [videoState, setVideoState] = useState(undefined);
   const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
-  const [menuVisible, setMenuVisible] = useState(player.controls.IsMenuVisible());
+  const [menuVisible, setMenuVisible] = useState(
+    player.controls.IsMenuVisible()
+  );
+  const [companyLogo, setCompanyLogo] = useState(undefined);
 
   useEffect(() => {
-    if(!player.controls) { return; }
+    const { companyLogo } = player.playerOptions.previewMode
+      ? contentInfo || {}
+      : player.controls.GetContentInfo() || {};
+    setCompanyLogo(companyLogo);
+  }, []);
 
-    setPlayerClickHandler(PlayerClick({player, setRecentUserAction}));
+  useEffect(() => {
+    if (player.playerOptions.previewMode) {
+      const { companyLogo } = contentInfo || {};
+      setCompanyLogo(companyLogo);
+    }
+  }, [contentInfo]);
 
-    const UpdateMenuVisibility = () => player && player.controls && setMenuVisible(player.controls.IsMenuVisible());
-    const disposeSettingsListener = player.controls.RegisterSettingsListener(UpdateMenuVisibility);
+  useEffect(() => {
+    if (!player.controls) {
+      return;
+    }
 
-    const disposeVideoObserver = ObserveVideo({player, setVideoState});
+    setPlayerClickHandler(PlayerClick({ player, setRecentUserAction }));
+
+    const UpdateMenuVisibility = () =>
+      player &&
+      player.controls &&
+      setMenuVisible(player.controls.IsMenuVisible());
+    const disposeSettingsListener =
+      player.controls.RegisterSettingsListener(UpdateMenuVisibility);
+
+    const disposeVideoObserver = ObserveVideo({ player, setVideoState });
 
     return () => {
       disposeSettingsListener && disposeSettingsListener();
@@ -219,13 +328,17 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
     };
   }, []);
 
-  if(!videoState) { return null; }
+  if (!videoState) {
+    return null;
+  }
 
   const collectionInfo = player.controls.GetCollectionInfo();
 
   // Title autohide is not dependent on controls settings
   const showUI = recentlyInteracted || !playbackStarted || menuVisible;
-  const hideControls = !showUI && player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE;
+  const hideControls =
+    !showUI &&
+    player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE;
 
   player.__SetControlsVisibility(!hideControls);
 
@@ -236,18 +349,24 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
         className,
         ControlStyles["container"],
         showUI ? "" : ControlStyles["autohide"],
-        player.playerOptions.controls !== EluvioPlayerParameters.controls.DEFAULT ? "" : ControlStyles["container--default-controls"],
-        player.controls.IsMenuVisible() ? "menu-active" : ""
+        player.playerOptions.controls !==
+        EluvioPlayerParameters.controls.DEFAULT
+          ? ""
+          : ControlStyles["container--default-controls"],
+        player.controls.IsMenuVisible() ? "menu-active" : "",
       ].join(" ")}
     >
-      <ContentInfo key={`content-info-${collectionInfo && collectionInfo.mediaIndex}`} player={player} />
+      <ContentInfo
+        key={`content-info-${collectionInfo && collectionInfo.mediaIndex}`}
+        player={player}
+      />
       {
         // Main bottom control bar
         [
           EluvioPlayerParameters.controls.DEFAULT,
           EluvioPlayerParameters.controls.OFF,
-          EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE
-        ].includes(player.playerOptions.controls) ? null :
+          EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE,
+        ].includes(player.playerOptions.controls) ? null : (
           <>
             <IconButton
               aria-label="Play"
@@ -258,88 +377,152 @@ const WebControls = ({player, playbackStarted, canPlay, recentlyInteracted, setR
                 // Take focus off of this button because it should no longer be selectable after playback starts
                 player.target.firstChild.focus();
               }}
-              className={`${ControlStyles["center-play-button"]} ${canPlay && !playbackStarted && !(player && player.casting) ? "" : ControlStyles["center-play-button--hidden"]}`}
+              className={`${ControlStyles["center-play-button"]} ${
+                canPlay && !playbackStarted && !(player && player.casting)
+                  ? ""
+                  : ControlStyles["center-play-button--hidden"]
+              }`}
             />
-            <div className={`${ControlStyles["bottom-controls-container"]} ${hideControls ? ControlStyles["bottom-controls-container--autohide"] : ""}`}>
+            <div
+              className={`${ControlStyles["bottom-controls-container"]} ${
+                hideControls
+                  ? ControlStyles["bottom-controls-container--autohide"]
+                  : ""
+              }`}
+            >
               <div className={ControlStyles["bottom-controls-gradient"]} />
-              <SeekBar player={player} videoState={videoState} setRecentUserAction={setRecentUserAction} className={ControlStyles["seek"]} />
+              <SeekBar
+                player={player}
+                videoState={videoState}
+                setRecentUserAction={setRecentUserAction}
+                className={ControlStyles["seek"]}
+              />
               <div className={ControlStyles["controls"]}>
                 <IconButton
                   aria-label={videoState.playing ? "Pause" : "Play"}
-                  icon={videoState.playing ? Icons.PauseCircleIcon : Icons.PlayCircleIcon}
+                  icon={
+                    videoState.playing
+                      ? Icons.PauseCircleIcon
+                      : Icons.PlayCircleIcon
+                  }
                   onClick={() => player.controls.TogglePlay()}
                   className={ControlStyles["play-pause-button"]}
                 />
-                <CollectionControls player={player}/>
-                <VolumeControls player={player} videoState={videoState}/>
-                <TimeIndicator player={player} videoState={videoState}/>
+                <CollectionControls player={player} />
+                <VolumeControls player={player} videoState={videoState} />
+                <TimeIndicator player={player} videoState={videoState} />
 
-                <div className={ControlStyles["spacer"]}/>
+                <div className={ControlStyles["spacer"]} />
 
-                <ContentVerificationControls player={player}/>
+                {/* <ContentVerificationControls player={player}/> */}
 
-                {
-                  !player.chromecastAvailable ? null :
-                    <google-cast-launcher></google-cast-launcher>
-                }
+                {!player.chromecastAvailable ? null : (
+                  <google-cast-launcher></google-cast-launcher>
+                )}
 
-                {
-                  !player.airplayAvailable ? null :
-                    <IconButton
-                      aria-label="Airplay"
-                      onClick={() => player.video.webkitShowPlaybackTargetPicker()}
-                      icon={Icons.AirplayIcon}
-                    />
-                }
-
-                {
-                  !player.controls.IsRotatable() ? null :
-                    <IconButton
-                      aria-label="Rotate Video"
-                      icon={Icons.RotateIcon}
-                      onClick={() => player.controls.SetAllowRotation(!player.controls.AllowRotation())}
-                      className={ControlStyles["right-control-button"]}
-                    />
-                }
-                {
-                  !player.controls.GetOptions().hasAnyOptions ? null :
-                    <MenuButton
-                      label="Settings Menu"
-                      icon={Icons.SettingsIcon}
-                      player={player}
-                      MenuComponent={SettingsMenu}
-                    />
-                }
+                {!player.airplayAvailable ? null : (
+                  <IconButton
+                    aria-label="Airplay"
+                    onClick={() =>
+                      player.video.webkitShowPlaybackTargetPicker()
+                    }
+                    icon={Icons.AirplayIcon}
+                  />
+                )}
+                {/* <IconButton
+                  aria-label="Captions"
+                  icon={
+                    videoState.captions
+                      ? Icons.CaptionsIcon
+                      : Icons.CaptionsOffIcon
+                  }
+                  className={ControlStyles["icon-buttons"]}
+                /> */}
                 <IconButton
-                  aria-label={videoState.fullscreen ? "Exit Fullscreen" : "Fullscreen"}
-                  icon={videoState.fullscreen ? Icons.ExitFullscreenIcon : Icons.FullscreenIcon}
+                  aria-label={
+                    videoState.pictureInPicture
+                      ? "Exit Miniplayer"
+                      : "Miniplayer"
+                  }
+                  icon={Icons.MiniplayerIcon}
+                  onClick={async () => {
+                    try {
+                      await player.controls.TogglePictureInPicture();
+                    } catch (error) {
+                      console.warn(
+                        "Failed to toggle Picture-in-Picture:",
+                        error
+                      );
+                    }
+                  }}
+                  className={ControlStyles["icon-buttons"]}
+                />
+                {!player.controls.IsRotatable() ? null : (
+                  <IconButton
+                    aria-label="Rotate Video"
+                    icon={Icons.RotateIcon}
+                    onClick={() =>
+                      player.controls.SetAllowRotation(
+                        !player.controls.AllowRotation()
+                      )
+                    }
+                    className={ControlStyles["right-control-button"]}
+                  />
+                )}
+                {!player.controls.GetOptions().hasAnyOptions ? null : (
+                  <MenuButton
+                    label="Settings Menu"
+                    icon={Icons.SettingsIcon}
+                    player={player}
+                    MenuComponent={SettingsMenu}
+                  />
+                )}
+                <IconButton
+                  aria-label={
+                    videoState.fullscreen ? "Exit Fullscreen" : "Fullscreen"
+                  }
+                  icon={
+                    videoState.fullscreen
+                      ? Icons.ExitFullscreenIcon
+                      : Icons.FullscreenIcon
+                  }
                   onClick={() => player.controls.ToggleFullscreen()}
                   className={ControlStyles["right-control-button"]}
                 />
+                <div className={ControlStyles["greenfish-logo"]}>
+                  <img src={GreenfishLogo} alt="Hiway logo" />
+                </div>
               </div>
             </div>
           </>
+        )
       }
       {
         // Floating volume control for 'off with volume toggle' setting
-        player.playerOptions.controls !== EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE ? null :
+        player.playerOptions.controls !==
+        EluvioPlayerParameters.controls.OFF_WITH_VOLUME_TOGGLE ? null : (
           <div className={ControlStyles["floating-volume-toggle"]}>
             <IconButton
               key="mute-button"
               aria-label={videoState.muted ? "Unmute" : "Mute"}
-              icon={videoState.muted || videoState.volume === 0 ? Icons.MutedIcon : Icons.VolumeHighIcon}
+              icon={
+                videoState.muted || videoState.volume === 0
+                  ? Icons.MutedIcon
+                  : Icons.VolumeHighIcon
+              }
               onClick={() => player.controls.ToggleMuted()}
               className={ControlStyles["volume-button"]}
             />
           </div>
+        )
       }
-      {
-        // Watermark
-        player.playerOptions.watermark === EluvioPlayerParameters.watermark.OFF ? null :
+      {companyLogo &&
+        ((player.controls.IsPlaying() && player.playerOptions.watermark) ||
+          !player.controls.IsPlaying()) && (
           <div className={ControlStyles["watermark"]}>
-            <img src={EluvioLogo} alt="Eluvio" />
+            <img src={companyLogo} alt="Company logo" />
           </div>
-      }
+        )}
     </div>
   );
 };

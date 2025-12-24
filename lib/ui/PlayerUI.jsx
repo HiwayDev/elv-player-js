@@ -236,7 +236,7 @@ const PlayerUI = ({
       }
       <video
         playsInline
-        disablePictureInPicture
+        // disablePictureInPicture
         ref={videoRef}
         muted={[EluvioPlayerParameters.muted.ON, EluvioPlayerParameters.muted.WHEN_NOT_VISIBLE].includes(parameters.playerOptions.muted)}
         controls={parameters.playerOptions.controls === EluvioPlayerParameters.controls.DEFAULT}

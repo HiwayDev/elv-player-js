@@ -1,9 +1,10 @@
 .container {
   align-items: center;
   bottom: 0;
-  color: #FFF;
+  color: #fff;
   display: flex;
-  font-family: Inter, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: Inter, system-ui, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   height: 100%;
   justify-content: center;
   left: 0;
@@ -15,16 +16,17 @@
   --layer-title: 1;
   --layer-controls: 2;
   --layer-info: 4;
+  --layer-center-button: 3;
 
   --color-highlight: #3784eb;
 
-  --color-text: #FFF;
+  --color-text: #fff;
   --color-text-highlight: #5e9ff3;
 
-  --color-button: #FFF;
+  --color-button: #fff;
 
   --color-menu-background: rgba(227, 227, 227, 70%);
-  --color-menu-button-active: #FFF;
+  --color-menu-button-active: #fff;
   --color-menu-button-focused: rgba(255, 255, 255, 75%);
   --color-menu-text: #282828;
   --color-menu-text-secondary: #666;
@@ -82,7 +84,7 @@
     }
 
     &:focus-visible {
-      filter: drop-shadow(0 0 5px #FFF);
+      filter: drop-shadow(0 0 5px #fff);
     }
   }
 
@@ -93,9 +95,9 @@
 
     &.icon-button-active,
     &:focus-visible {
-      background-color: #FFF;
+      background-color: #fff;
       color: #000;
-      filter: drop-shadow(0 0 5px #FFF);
+      filter: drop-shadow(0 0 5px #fff);
 
       * {
         color: #000;
@@ -112,9 +114,9 @@
   &--active,
   &:hover,
   &:focus-visible {
-    background-color: #FFF;
+    background-color: #fff;
     color: #000;
-    filter: drop-shadow(0 0 5px #FFF);
+    filter: drop-shadow(0 0 5px #fff);
   }
 }
 
@@ -130,7 +132,7 @@
 }
 
 .bottom-controls-gradient {
-  background: linear-gradient(transparent, rgba(0,0,0,100%));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 100%));
   bottom: 0;
   height: 150%;
   left: 0;
@@ -146,7 +148,7 @@
   position: relative;
   transition: opacity 0.5s ease;
   width: 125px;
-  z-index: var(--layer-controls);
+  z-index: var(--layer-center-button);
 
   &--hidden {
     opacity: 0;
@@ -181,7 +183,7 @@
 }
 
 .live-indicator {
-  background: #F00;
+  background: #f00;
   border-radius: 5px;
   font-size: 14px;
   font-weight: 600;
@@ -201,7 +203,6 @@
     opacity: 1;
   }
 }
-
 
 .bottom-controls {
   align-items: flex-end;
@@ -319,7 +320,7 @@
 
 .info-box-button {
   align-items: center;
-  background: #FFF;
+  background: #fff;
   border-radius: 5px;
   color: #000;
   display: flex;
@@ -332,7 +333,7 @@
   &:hover,
   &:focus,
   &:focus-visible {
-    filter: drop-shadow(0 0 5px #FFF);
+    filter: drop-shadow(0 0 5px #fff);
   }
 
   &--restart {
@@ -370,6 +371,11 @@
   user-select: none;
   width: 70px;
   z-index: var(--layer-title);
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 :global(.__eluvio-player--size-lg) {
@@ -435,7 +441,7 @@
   }
 
   .menu {
-    max-height: calc(var(--portal-height) - 250px)!important;
+    max-height: calc(var(--portal-height) - 250px) !important;
   }
 
   .info-box-container {
@@ -491,10 +497,13 @@
   }
 }
 
-
 /* Animations */
 
 @keyframes fadein {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
