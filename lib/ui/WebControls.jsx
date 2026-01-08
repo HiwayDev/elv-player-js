@@ -8,7 +8,8 @@ import "focus-visible";
 import { ImageUrl, PlayerClick, Time } from "./Common.js";
 import EluvioPlayerParameters from "../player/PlayerParameters.js";
 import GreenfishLogo from "../static/images/greenfish_logo.svg";
-
+import MarkInIcon from "../static/icons/svgs/mark-in.svg";
+import MarkOutIcon from "../static/icons/svgs/mark-out.svg";
 import {
   ContentVerificationMenu,
   DVRToggle,
@@ -171,7 +172,6 @@ const ContentInfo = ({ player, contentInfo }) => {
         : player.controls.GetContentInfo() || {};
       setTitle(title);
       setSubtitle(subtitle);
-      console.log(player.controls.GetContentInfo());
       if (headers) {
         const svg = await loadRatingSvg(headers[0]);
         setRating(svg);
@@ -291,6 +291,8 @@ const WebControls = ({
     player.controls.IsMenuVisible()
   );
   const [companyLogo, setCompanyLogo] = useState(undefined);
+  const [showMarkIn, setShowMarkIn] = useState(undefined);
+  const [showMarkOut, setShowMarkOut] = useState(undefined);
 
   useEffect(() => {
     const { companyLogo } = player.playerOptions.previewMode
@@ -396,6 +398,8 @@ const WebControls = ({
                 videoState={videoState}
                 setRecentUserAction={setRecentUserAction}
                 className={ControlStyles["seek"]}
+                clickOnMarkIn={showMarkIn}
+                clickOnMarkOut={showMarkOut}
               />
               <div className={ControlStyles["controls"]}>
                 <IconButton
@@ -412,9 +416,33 @@ const WebControls = ({
                 <VolumeControls player={player} videoState={videoState} />
                 <TimeIndicator player={player} videoState={videoState} />
 
+                {player.playerOptions.markInOut && (
+                  <div className={ControlStyles["mark-function"]}>
+                    <div
+                      className={ControlStyles["mark-in"]}
+                      onClick={() => {
+                        setShowMarkIn(new Date());
+                        setShowMarkOut(undefined);
+                      }}
+                    >
+                      <img src={MarkInIcon} alt="Mark in" />
+                    </div>
+                    <div
+                      className={ControlStyles["mark-out"]}
+                      onClick={() => {
+                        if (showMarkIn) {
+                          setShowMarkOut(new Date());
+                        }
+                      }}
+                    >
+                      <img src={MarkOutIcon} alt="Mark out" />
+                    </div>
+                  </div>
+                )}
+
                 <div className={ControlStyles["spacer"]} />
 
-                {/* <ContentVerificationControls player={player}/> */}
+                <ContentVerificationControls player={player} />
 
                 {!player.chromecastAvailable ? null : (
                   <google-cast-launcher></google-cast-launcher>
@@ -429,15 +457,22 @@ const WebControls = ({
                     icon={Icons.AirplayIcon}
                   />
                 )}
-                {/* <IconButton
-                  aria-label="Captions"
-                  icon={
-                    videoState.captions
-                      ? Icons.CaptionsIcon
-                      : Icons.CaptionsOffIcon
-                  }
-                  className={ControlStyles["icon-buttons"]}
-                /> */}
+                {player.controls.GetTextTracks().options.length === 0 ? null : (
+                  <IconButton
+                    aria-label={
+                      videoState.captions
+                        ? "Turn off Captions"
+                        : "Turn on Captions"
+                    }
+                    icon={
+                      videoState.captions
+                        ? Icons.CaptionsIcon
+                        : Icons.CaptionsOffIcon
+                    }
+                    onClick={() => player.controls.ToggleTextTrack()}
+                    className={ControlStyles["icon-buttons"]}
+                  />
+                )}
                 <IconButton
                   aria-label={
                     videoState.pictureInPicture

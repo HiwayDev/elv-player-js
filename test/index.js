@@ -64,6 +64,7 @@ const Initialize = async () => {
           //offering: "default",
           //offerings: ["none", "some"]
         },
+
         contentInfo: {
           title: "My Big Title",
           subtitle: "My subtitle",
@@ -95,6 +96,11 @@ const Initialize = async () => {
           //maxBufferLength: 1,
           //maxBufferSize: 0.5 * 1000 * 1000
         },
+        markInOut: true,
+        markInOutCallback: (values) => {
+          console.log("markInOutCallback: ", values);
+        },
+        // previewMode: true,
       },
     }
   );

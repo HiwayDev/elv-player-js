@@ -1,10 +1,10 @@
 {
-  "name": "@eluvio/elv-player-js",
+  "name": "@HiwayDev/elv-player-js",
   "version": "2.1.14",
   "description": "![Eluvio Logo](lib/static/images/Logo.png \"Eluvio Logo\")",
   "main": "dist/elv-player-js.es.js",
   "license": "MIT",
-  "homepage": "https://github.com/eluv-io/elv-player-js",
+  "homepage": "https://github.com/HiwayDev/elv-player-js",
   "scripts": {
     "prepublishOnly": "npm run build",
     "bump-version": "npm --git-tag-version --no-commit-hooks version patch",
@@ -70,10 +70,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eluv-io/elv-player-js.git"
+    "url": "git+https://github.com/HiwayDev/elv-player-js.git"
   },
   "author": "",
   "bugs": {
-    "url": "https://github.com/eluv-io/elv-player-js/issues"
+    "url": "https://github.com/HiwayDev/elv-player-js/issues"
   }
 }
