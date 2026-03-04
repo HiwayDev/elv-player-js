@@ -205,7 +205,7 @@ const ContentInfo = ({ player, contentInfo }) => {
     }
 
     ImageUrl({ player, pathOrUrl: image, width: 200 }).then((imageUrl) =>
-      setImageUrl(imageUrl)
+      setImageUrl(imageUrl),
     );
   }, [image]);
 
@@ -289,7 +289,7 @@ const WebControls = ({
   const [videoState, setVideoState] = useState(undefined);
   const [playerClickHandler, setPlayerClickHandler] = useState(undefined);
   const [menuVisible, setMenuVisible] = useState(
-    player.controls.IsMenuVisible()
+    player.controls.IsMenuVisible(),
   );
   const [companyLogo, setCompanyLogo] = useState(undefined);
   const [showMarkIn, setShowMarkIn] = useState(undefined);
@@ -484,7 +484,7 @@ const WebControls = ({
                     } catch (error) {
                       console.warn(
                         "Failed to toggle Picture-in-Picture:",
-                        error
+                        error,
                       );
                     }
                   }}
@@ -496,7 +496,7 @@ const WebControls = ({
                     icon={Icons.RotateIcon}
                     onClick={() =>
                       player.controls.SetAllowRotation(
-                        !player.controls.AllowRotation()
+                        !player.controls.AllowRotation(),
                       )
                     }
                     className={ControlStyles["right-control-button"]}
@@ -522,6 +522,14 @@ const WebControls = ({
                   onClick={() => player.controls.ToggleFullscreen()}
                   className={ControlStyles["right-control-button"]}
                 />
+                {!player.playerOptions.onShare ? null : (
+                  <IconButton
+                    aria-label="Share"
+                    icon={Icons.ShareIcon}
+                    onClick={() => player.playerOptions.onShare()}
+                    className={ControlStyles["right-control-button"]}
+                  />
+                )}
                 <div className={ControlStyles["greenfish-logo"]}>
                   <img src={GreenfishLogo} alt="Hiway logo" />
                 </div>

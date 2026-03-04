@@ -102,6 +102,9 @@ const Initialize = async () => {
         markInOutCallback: (values) => {
           console.log("markInOutCallback: ", values);
         },
+        onShare: () => {
+          console.log("Share button clicked");
+        },
         // previewMode: true,
       },
     },
