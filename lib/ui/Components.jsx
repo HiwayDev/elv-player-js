@@ -691,6 +691,82 @@ export const SettingsMenu = ({ player, Hide, className = "" }) => {
   return <div ref={menuRef}>{content}</div>;
 };
 
+export const SubtitleMenu = ({ player, Hide, className = "" }) => {
+  const [options, setOptions] = useState(undefined);
+  const menuRef = createRef();
+
+  useEffect(() => {
+    const UpdateSettings = () => setOptions(player.controls.GetOptions());
+
+    UpdateSettings();
+
+    const disposePlayerSettingsListener =
+      player.controls.RegisterSettingsListener(UpdateSettings);
+
+    return () =>
+      disposePlayerSettingsListener && disposePlayerSettingsListener();
+  }, []);
+
+  useEffect(() => {
+    if (!menuRef || !menuRef.current) {
+      return;
+    }
+
+    const RemoveMenuListener = RegisterModal({
+      element: menuRef.current.parentElement,
+      Hide,
+    });
+
+    return () => {
+      RemoveMenuListener && RemoveMenuListener();
+    };
+  }, [menuRef]);
+
+  if (!options || !options.hasTextOptions) {
+    return null;
+  }
+
+  return (
+    <div ref={menuRef}>
+      <div
+        key="subtitle-menu"
+        role="menu"
+        className={`${CommonStyles["menu"]} ${className}`}
+      >
+        <div
+          className={`${CommonStyles["menu-option"]} ${CommonStyles["menu-header"]}`}
+        >
+          Subtitles
+        </div>
+        {options.text.options.map((option) => (
+          <button
+            key={`subtitle-option-${option.index}`}
+            role="menuitemradio"
+            aria-checked={option.active}
+            autoFocus={option.active}
+            aria-label={`Subtitles: ${option.label || ""}`}
+            onClick={() => {
+              player.controls.SetTextTrack(option.index);
+              Hide();
+            }}
+            className={`${CommonStyles["menu-option"]} ${
+              option.active ? CommonStyles["menu-option-active"] : ""
+            }`}
+          >
+            {option.label || ""}
+            {option.active ? (
+              <SVG
+                icon={Icons.CheckmarkIcon}
+                className={CommonStyles["menu-option-icon"]}
+              />
+            ) : null}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const DVRToggle = ({ player }) => {
   const [dvrEnabled, setDVREnabled] = useState(player.dvrEnabled);
 

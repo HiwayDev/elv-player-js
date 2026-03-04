@@ -15,6 +15,7 @@ import {
   DVRToggle,
   SeekBar,
   SettingsMenu,
+  SubtitleMenu,
   VolumeControls,
 } from "./Components.jsx";
 
@@ -458,18 +459,15 @@ const WebControls = ({
                   />
                 )}
                 {player.controls.GetTextTracks().options.length === 0 ? null : (
-                  <IconButton
-                    aria-label={
-                      videoState.captions
-                        ? "Turn off Captions"
-                        : "Turn on Captions"
-                    }
+                  <MenuButton
+                    label="Subtitles"
                     icon={
                       videoState.captions
                         ? Icons.CaptionsIcon
                         : Icons.CaptionsOffIcon
                     }
-                    onClick={() => player.controls.ToggleTextTrack()}
+                    player={player}
+                    MenuComponent={SubtitleMenu}
                     className={ControlStyles["icon-buttons"]}
                   />
                 )}

@@ -36,9 +36,9 @@ const Initialize = async () => {
 
   // Ticket content
   //network = "DEMO";
-  //versionHash = "hq__i8Sf43pUfsmmgd7iu5m4Mp27ct3eqUJ5rYCenUh6HxBW6du1Ets3fBVg1spWCNkpaMa94LrP2"
+  // versionHash = "hq__i8Sf43pUfsmmgd7iu5m4Mp27ct3eqUJ5rYCenUh6HxBW6du1Ets3fBVg1spWCNkpaMa94LrP2"
   //network = "MAIN";
-  //objectId = "iq__3TrvvPrt9Xa2nHhaNsL5sjNSMCdn";
+  // objectId = "iq__3TrvvPrt9Xa2nHhaNsL5sjNSMCdn";
 
   // PlayReady
   // network = "DEMO_LOCAL";
@@ -63,6 +63,8 @@ const Initialize = async () => {
           authorizationToken,
           //offering: "default",
           //offerings: ["none", "some"]
+          // clipStart: 20,
+          // clipEnd: 50
         },
 
         contentInfo: {
@@ -96,13 +98,13 @@ const Initialize = async () => {
           //maxBufferLength: 1,
           //maxBufferSize: 0.5 * 1000 * 1000
         },
-        markInOut: true,
+        // markInOut: true,
         markInOutCallback: (values) => {
           console.log("markInOutCallback: ", values);
         },
         // previewMode: true,
       },
-    }
+    },
   );
 };
 
