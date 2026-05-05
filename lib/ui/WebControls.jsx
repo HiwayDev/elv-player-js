@@ -18,6 +18,7 @@ import {
   SubtitleMenu,
   VolumeControls,
 } from "./Components.jsx";
+import SharePopup from "./SharePopup.jsx";
 
 export const IconButton = ({ icon, className = "", ...props }) => {
   return (
@@ -294,6 +295,7 @@ const WebControls = ({
   const [companyLogo, setCompanyLogo] = useState(undefined);
   const [showMarkIn, setShowMarkIn] = useState(undefined);
   const [showMarkOut, setShowMarkOut] = useState(undefined);
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     const { companyLogo } = player.playerOptions.previewMode
@@ -338,7 +340,7 @@ const WebControls = ({
   const collectionInfo = player.controls.GetCollectionInfo();
 
   // Title autohide is not dependent on controls settings
-  const showUI = recentlyInteracted || !playbackStarted || menuVisible;
+  const showUI = recentlyInteracted || !playbackStarted || menuVisible || shareOpen;
   const hideControls =
     !showUI &&
     player.playerOptions.controls === EluvioPlayerParameters.controls.AUTO_HIDE;
@@ -522,11 +524,20 @@ const WebControls = ({
                   onClick={() => player.controls.ToggleFullscreen()}
                   className={ControlStyles["right-control-button"]}
                 />
-                {!player.playerOptions.onShare ? null : (
+                {!player.playerOptions.shareConfig &&
+                !player.playerOptions.onShare ? null : (
                   <IconButton
                     aria-label="Share"
+                    data-share-trigger="true"
                     icon={Icons.ShareIcon}
-                    onClick={() => player.playerOptions.onShare()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (player.playerOptions.shareConfig) {
+                        setShareOpen((open) => !open);
+                      } else if (player.playerOptions.onShare) {
+                        player.playerOptions.onShare();
+                      }
+                    }}
                     className={ControlStyles["right-control-button"]}
                   />
                 )}
@@ -564,6 +575,13 @@ const WebControls = ({
             <img src={companyLogo} alt="Company logo" />
           </div>
         )}
+      {shareOpen && (
+        <SharePopup
+          player={player}
+          shareConfig={player.playerOptions.shareConfig}
+          onClose={() => setShareOpen(false)}
+        />
+      )}
     </div>
   );
 };
