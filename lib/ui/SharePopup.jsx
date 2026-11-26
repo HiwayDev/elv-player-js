@@ -7,6 +7,7 @@ import {
   BuildShareUrl,
   ResolveChannelUrl,
   SHARE_CHANNELS,
+  ShareToInstagram,
 } from "./share/channels.js";
 
 const FormatTimestamp = (totalSeconds) => {
@@ -55,6 +56,14 @@ const ChannelGlyph = ({ channelKey }) => {
       return (
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.7 3h3.2l-7 8 8.2 10h-6.4l-5-6.5L4.8 21H1.6l7.5-8.6L1.2 3h6.6l4.5 6 5.4-6zm-1.1 16h1.8L7.5 4.9H5.6L16.6 19z" /></svg>
       );
+    case "instagram":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+        </svg>
+      );
     case "linkedin":
       return (
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 8.3v11.5H3V8.3h3.5zM4.7 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM21 19.8h-3.5v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H10V8.3h3.4v1.6h.05a3.7 3.7 0 0 1 3.4-1.9c3.6 0 4.3 2.4 4.3 5.5v6.3z" /></svg>
@@ -84,6 +93,7 @@ const SharePopup = ({ player, shareConfig, onClose }) => {
   );
   const [embedMode, setEmbedMode] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [instagramHint, setInstagramHint] = useState(false);
 
   const baseUrl =
     shareConfig?.baseUrl ||
@@ -126,6 +136,17 @@ const SharePopup = ({ player, shareConfig, onClose }) => {
   }, [onClose]);
 
   const handleChannel = (channel) => {
+    if (channel.mode === "instagram") {
+      setInstagramHint(false);
+      ShareToInstagram({ baseUrl, title, startSeconds: currentStart }).then((result) => {
+        if (result === "copied") setInstagramHint(true);
+        if (result === "failed") {
+          urlInputRef.current?.focus();
+          urlInputRef.current?.select();
+        }
+      });
+      return;
+    }
     if (channel.mode === "embed") {
       if (!embedSrc) return;
       setEmbedMode(true);
@@ -220,6 +241,12 @@ const SharePopup = ({ player, shareConfig, onClose }) => {
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
+
+      {instagramHint ? (
+        <p role="status" className={Styles.hint}>
+          Link copied. Paste it into your story or bio.
+        </p>
+      ) : null}
 
       <div className={Styles.startRow}>
         <input
